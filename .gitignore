@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+.clasp.json
+.clasprc.json
+credentials.json
+service-account*.json
+PGN_Audited_Package.zip
+tests/dashboard-preview.html

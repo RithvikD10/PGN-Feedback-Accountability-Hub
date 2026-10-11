@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PGN | Feedback & Accountability</title>
+  <style>
+    :root {
+      --red: #A8322B;
+      --red-dark: #862720;
+      --black: #080808;
+      --background: #F8F7F6;
+      --white: #FFFFFF;
+      --text: #181818;
+      --muted: #666666;
+      --border: #E8E5E2;
+      --focus: #1A4FD6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    .skip-link {
+      position: absolute; left: -999px; top: 8px; background: #fff; color: #000;
+      padding: 8px 12px; border-radius: 6px; z-index: 10;
+    }
+    .skip-link:focus { left: 8px; }
+    header {
+      background: #000;
+      color: white;
+      padding: 14px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-logo { width: 105px; height: 105px; object-fit: contain; }
+    .header-tag {
+      font-size: 11px;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 10px 14px;
+      letter-spacing: 1px;
+    }
+    .navigation {
+      background: #171717;
+      padding: 0 5%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      border-top: 1px solid #262626;
+    }
+    .nav-button {
+      border: 0;
+      background: transparent;
+      color: #CCC;
+      font-size: 13px;
+      padding: 18px 15px;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-button:hover { color: white; background: #252525; }
+    .nav-button.active { color: white; border-bottom-color: var(--red); }
+    main { max-width: 1280px; padding: 50px 28px 90px; margin: auto; }
+    .eyebrow {
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    h1 { font-size: clamp(30px, 5vw, 52px); letter-spacing: -1.8px; margin: 14px 0; overflow-wrap: anywhere; }
+    h1:focus { outline: none; }
+    h2 { font-size: 24px; letter-spacing: -0.6px; margin: 0 0 20px; }
+    h3 { font-size: 17px; margin: 0 0 15px; }
+    .description { color: #686868; line-height: 1.7; max-width: 760px; font-size: 15px; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .topline { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .btn {
+      background: var(--red);
+      border: 0;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .btn:hover { background: var(--red-dark); }
+    .btn.secondary { background: white; color: #222; border: 1px solid var(--border); }
+    .btn.secondary:hover { background: #EEE; }
+    .btn.small { padding: 8px 12px; font-size: 12px; margin-top: 10px; margin-right: 8px; }
+    .btn.danger { background: #fff; color: var(--red-dark); border: 1px solid #E3B9B4; }
+    .btn.danger:hover { background: #FBEDEA; }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
+    .status-text { color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .status-text.error { color: var(--red-dark); font-weight: 700; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin: 32px 0 45px; }
+    .stat { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 25px; }
+    .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+    .stat-number { font-size: 38px; font-weight: 700; margin-top: 14px; }
+    .panel { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; }
+    .section { margin-top: 35px; }
+    .category-row { margin: 20px 0; }
+    .category-head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; font-size: 14px; }
+    .bar { height: 9px; border-radius: 20px; background: #EEE; overflow: hidden; }
+    .bar-fill { background: var(--red); height: 100%; }
+    .filters { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 12px; margin: 23px 0 12px; }
+    .filters-secondary { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
+    .filters-secondary .field { margin: 0; max-width: 230px; }
+    input, select, textarea {
+      background: white;
+      border: 1px solid #DCDAD7;
+      border-radius: 7px;
+      padding: 12px;
+      color: var(--text);
+      width: 100%;
+      font-size: 13px;
+    }
+    textarea { min-height: 115px; resize: vertical; line-height: 1.6; }
+    label { display: block; color: #555; font-size: 12px; margin-bottom: 8px; }
+    .field { margin-bottom: 18px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      text-align: left;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-size: 11px;
+      padding: 15px 12px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td { padding: 17px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .clickable { cursor: pointer; }
+    .clickable:hover { background: #FCF6F5; }
+    .clickable:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+    .row-link { font-weight: 700; color: #222; text-decoration: none; }
+    .row-link:hover, .row-link:focus { text-decoration: underline; }
+    .badge {
+      display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 10px;
+      background: #EEE; color: #444; margin-left: 6px; vertical-align: middle;
+    }
+    .badge.red { background: #FBEDEA; color: var(--red-dark); }
+    .executive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
+    .executive-card {
+      text-align: left; background: white; border: 1px solid var(--border);
+      border-radius: 11px; padding: 23px; width: 100%;
+    }
+    .executive-card:hover { border-color: var(--red); }
+    .executive-card strong { display: block; font-size: 28px; margin: 12px 0; }
+    .executive-card span { color: #666; font-size: 13px; }
+    .detail-back {
+      background: transparent; border: 0; color: var(--red); font-size: 13px;
+      font-weight: 700; padding: 0; margin-bottom: 22px;
+    }
+    .detail-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; }
+    .detail-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+    .detail-info div { padding: 14px; background: #F8F7F6; border-radius: 7px; overflow-wrap: anywhere; }
+    .detail-info small { display: block; color: #666; margin-bottom: 7px; }
+    .quote {
+      background: #F8F7F6; border-left: 3px solid var(--red); padding: 18px;
+      line-height: 1.7; overflow-wrap: anywhere; white-space: pre-wrap; font-size: 14px;
+    }
+    .editor-note {
+      background: #FFF7F4; border: 1px solid #EAD3CC; border-radius: 8px; padding: 14px;
+      font-size: 12px; line-height: 1.7; color: #70433B; margin: 14px 0;
+    }
+    .timeline-entry { border-left: 2px solid #E1D4D2; padding: 4px 0 20px 18px; margin-left: 5px; }
+    .timeline-date { color: var(--red); font-size: 11px; margin-bottom: 7px; }
+    .timeline-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.6; }
+    .timeline-meta { color: var(--muted); font-size: 11px; margin-top: 6px; }
+    .inline-confirm { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .empty { padding: 25px 0; color: #666; font-size: 13px; }
+    .notice { font-size: 12px; color: #666; line-height: 1.8; margin-top: 30px; }
+    .list-link {
+      display: block; width: 100%; text-align: left; margin-bottom: 10px; overflow-wrap: anywhere;
+    }
+    footer { padding: 30px 5%; background: #000; color: #AAA; font-size: 11px; letter-spacing: 0.5px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    @media (max-width: 950px) {
+      .filters { grid-template-columns: repeat(2, 1fr); }
+      .detail-grid { grid-template-columns: 1fr; }
+      .executive-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 650px) {
+      main { padding: 35px 16px 60px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .filters { grid-template-columns: 1fr; }
+      .executive-grid { grid-template-columns: 1fr; }
+      .detail-info { grid-template-columns: 1fr; }
+      .header-tag { font-size: 9px; }
+      .brand-logo { width: 76px; height: 76px; }
+      .navigation { padding: 0 10px; }
+      .nav-button { padding: 14px 10px; font-size: 12px; }
+      .panel { padding: 17px; }
+      td, th { padding: 12px 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header>
+  <div class="brand">
+    <img class="brand-logo" alt="Phi Gamma Nu logo" src="data:image/webp;base64,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">
+  </div>
+  <div class="header-tag">PRESIDENTIAL WORKSPACE</div>
+</header>
+
+<nav class="navigation" aria-label="Dashboard sections">
+  <button class="nav-button active" data-page="overview" aria-current="page">Overview</button>
+  <button class="nav-button" data-page="complaints">All Complaints</button>
+  <button class="nav-button" data-page="executives">Executive Sections</button>
+  <button class="nav-button" data-page="recurring">Recurring Issues</button>
+  <button class="nav-button" data-page="review">Review Queue</button>
+  <button class="nav-button" data-page="actions">Action Log</button>
+</nav>
+
+<main id="main">
+  <div class="topline">
+    <div class="eyebrow">Phi Gamma Nu / Presidential Office</div>
+    <button class="btn secondary" id="refreshButton" type="button">Refresh Data</button>
+  </div>
+  <p class="status-text" id="loadStatus" role="status" aria-live="polite">Loading PGN database...</p>
+
+  <section class="page active" id="page-overview" aria-labelledby="h-overview">
+    <h1 id="h-overview" tabindex="-1">Feedback & Accountability.</h1>
+    <p class="description">
+      Understand chapter concerns, identify recurring feedback,
+      and document the steps leadership takes in response.
+    </p>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Total Issues</div><div class="stat-number" id="stat-issues">...</div></div>
+      <div class="stat"><div class="stat-label">Submissions</div><div class="stat-number" id="stat-submissions">...</div></div>
+      <div class="stat"><div class="stat-label">Active Recurring Groups</div><div class="stat-number" id="stat-groups">...</div></div>
+      <div class="stat"><div class="stat-label">Review Queue</div><div class="stat-number" id="stat-review">...</div></div>
+    </div>
+    <div class="section">
+      <h2>Issues by Executive</h2>
+      <div class="panel" id="overview-categories"></div>
+    </div>
+    <div class="section">
+      <h2>Top Recurring Concerns</h2>
+      <div class="panel table-wrap">
+        <table>
+          <thead><tr><th scope="col">Issue</th><th scope="col">Category</th><th scope="col">Reports</th><th scope="col">Status</th></tr></thead>
+          <tbody id="overview-groups"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-complaints" aria-labelledby="h-complaints">
+    <h1 id="h-complaints" tabindex="-1">All Complaints.</h1>
+    <p class="description">
+      Search, filter, and open individual complaints.
+      Correct AI classifications and document actions.
+    </p>
+    <div class="filters">
+      <input id="filter-search" type="search" aria-label="Search complaints, issue IDs or group IDs" placeholder="Search complaints or issue IDs...">
+      <select id="filter-category" aria-label="Filter by category">
+        <option value="">All categories</option>
+        <option>Externals</option><option>Internals</option><option>Finance</option>
+        <option>Communication</option><option>New Member Education</option><option>Uncategorized</option>
+      </select>
+      <select id="filter-urgency" aria-label="Filter by urgency">
+        <option value="">All urgency levels</option>
+        <option>Needs Review</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
+      </select>
+      <select id="filter-status" aria-label="Filter by status">
+        <option value="">All statuses</option>
+        <option>New</option><option>Under Review</option><option>In Progress</option><option>Monitoring</option><option>Closed</option>
+      </select>
+      <select id="filter-method" aria-label="Filter by processing method">
+        <option value="">All processing methods</option>
+        <option>Gemini AI</option><option>AI Failed</option><option>Rule-based</option><option>Header Mismatch</option>
+      </select>
+    </div>
+    <div class="filters-secondary">
+      <div class="field"><label for="filter-from">Submitted on or after</label><input type="date" id="filter-from"></div>
+      <div class="field"><label for="filter-to">Submitted on or before</label><input type="date" id="filter-to"></div>
+      <div class="field"><button class="btn secondary" id="filter-reset" type="button">Reset filters</button></div>
+    </div>
+    <p class="status-text" id="complaint-count" aria-live="polite"></p>
+    <div class="panel table-wrap">
+      <table>
+        <thead><tr>
+          <th scope="col">Issue ID</th><th scope="col">Date</th><th scope="col">Complaint</th>
+          <th scope="col">Category</th><th scope="col">Urgency</th><th scope="col">Status</th>
+        </tr></thead>
+        <tbody id="complaints-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="page" id="page-executives" aria-labelledby="h-executives">
+    <h1 id="h-executives" tabindex="-1">Executive Sections.</h1>
+    <p class="description">Select an executive to view the complaints assigned to their area of responsibility.</p>
+    <div class="executive-grid" id="executive-grid"></div>
+  </section>
+
+  <section class="page" id="page-recurring" aria-labelledby="h-recurring">
+    <h1 id="h-recurring" tabindex="-1">Recurring Issues.</h1>
+    <p class="description">Review concerns reported repeatedly and maintain a shared history of actions taken.</p>
+    <div class="panel table-wrap">
+      <table>
+        <thead><tr>
+          <th scope="col">Group</th><th scope="col">Category</th><th scope="col">Reports</th>
+          <th scope="col">Last Reported</th><th scope="col">Priority</th><th scope="col">Status</th>
+        </tr></thead>
+        <tbody id="recurring-table"></tbody>
+      </table>
+    </div>
+    <div class="section">
+      <h2>Archived and Empty Groups</h2>
+      <p class="description">Merged groups keep their earlier action notes here. Empty groups have no linked complaints.</p>
+      <div class="panel table-wrap">
+        <table>
+          <thead><tr>
+            <th scope="col">Group</th><th scope="col">Category</th><th scope="col">Reports</th>
+            <th scope="col">Status</th><th scope="col">Merged Into</th>
+          </tr></thead>
+          <tbody id="archived-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-review" aria-labelledby="h-review">
+    <h1 id="h-review" tabindex="-1">Review Queue.</h1>
+    <p class="description">
+      Issues that need an urgency assessment, have an unclear classification,
+      failed AI processing, or are marked high priority.
+    </p>
+    <div class="panel table-wrap">
+      <table>
+        <thead><tr>
+          <th scope="col">Issue</th><th scope="col">Category</th><th scope="col">Method</th>
+          <th scope="col">Urgency</th><th scope="col">Status</th>
+        </tr></thead>
+        <tbody id="review-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="page" id="page-actions" aria-labelledby="h-actions">
+    <h1 id="h-actions" tabindex="-1">Presidential Action Log.</h1>
+    <p class="description">A dated record of what leadership has done about individual complaints and recurring concerns.</p>
+    <div class="panel">
+      <h3>All Recorded Actions</h3>
+      <div id="all-actions"></div>
+    </div>
+    <div class="panel">
+      <h3>Deleted Notes</h3>
+      <p class="status-text">Deleted notes stay in the private spreadsheet, are excluded from AI briefs, and can be restored.</p>
+      <div id="deleted-actions"></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-detail" aria-labelledby="h-detail">
+    <button class="detail-back" id="detail-back" type="button">&larr; Back to previous section</button>
+    <div id="detail-content"></div>
+  </section>
+
+  <p class="notice">
+    Private presidential workspace. Report counts reflect issue records, not necessarily unique individuals.
+    Action notes document steps taken and do not automatically resolve a complaint. AI output is a suggestion
+    and never changes records.
+  </p>
+</main>
+
+<footer>
+  <span>PHI GAMMA NU | FEEDBACK &amp; ACCOUNTABILITY HUB</span>
+  <span id="viewer-info"></span>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ------------------------------------------------------------ state
+  const state = {
+    data: { issues: [], groups: [], actionLogs: [], deletedActionLogs: [] },
+    loading: false,
+    previousPage: "overview",
+    selected: null, // { type: "Issue"|"Group", id }
+    viewer: ""
+  };
+
+  const CATEGORIES = [
+    ["Internals", "VP of Internals"],
+    ["Externals", "VP of Externals"],
+    ["Finance", "VP of Finance"],
+    ["Communication", "VP of Communications"],
+    ["New Member Education", "VP of New Member Education"],
+    ["Uncategorized", "President"]
+  ];
+  const CATEGORY_NAMES = [
+    "Externals", "Internals", "Finance", "Communication", "New Member Education", "Uncategorized"
+  ];
+  const URGENCY_LEVELS = ["Needs Review", "Low", "Medium", "High", "Critical"];
+  const STATUS_LEVELS = ["New", "Under Review", "In Progress", "Monitoring", "Closed"];
+  const GROUP_PRIORITIES = ["Needs Review", "Low", "Medium", "High", "Critical"];
+  const GROUP_STATUSES = ["Open", "Under Review", "In Progress", "Monitoring", "Closed"];
+  const PAGES = ["overview", "complaints", "executives", "recurring", "review", "actions"];
+
+  // ------------------------------------------------------------ helpers
+  function byId(id) { return document.getElementById(id); }
+  function setText(id, text) { byId(id).textContent = String(text); }
+  function make(tag, text, className) {
+    const element = document.createElement(tag);
+    if (text !== undefined && text !== null) element.textContent = String(text);
+    if (className) element.className = className;
+    return element;
+  }
+  function readableDate(value) {
+    if (!value) return "Not recorded";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "Not recorded"
+      : d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  }
+  function readableDateTime(value) {
+    if (!value) return "Not recorded";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "Not recorded" : d.toLocaleString();
+  }
+  // Local calendar date (YYYY-MM-DD) so date filters follow the viewer's
+  // timezone instead of the UTC date embedded in the ISO string.
+  function localDateKey(value) {
+    if (!value) return "";
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return "";
+    const pad = n => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+  function randomToken() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "tok-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 12);
+  }
+  function hasBackend() {
+    return !!(window.google && google.script && google.script.run);
+  }
+  function rpc(name) {
+    const args = Array.prototype.slice.call(arguments, 1);
+    return new Promise((resolve, reject) => {
+      if (!hasBackend()) {
+        reject(new Error("Open this dashboard through its Apps Script web app URL."));
+        return;
+      }
+      const runner = google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(error => {
+          reject(error instanceof Error ? error : new Error(error && error.message ? error.message : String(error)));
+        });
+      runner[name].apply(runner, args);
+    });
+  }
+  function errorText(error) {
+    const message = error && error.message ? error.message : String(error || "Unknown error");
+    return message.replace(/^Error:\s*/, "");
+  }
+  function activeGroups() {
+    return state.data.groups.filter(g => !g.archived && g.reports > 0);
+  }
+  function inactiveGroups() {
+    return state.data.groups.filter(g => g.archived || g.reports <= 0);
+  }
+  function findIssue(id) { return state.data.issues.find(i => i.id === id); }
+  function findGroup(id) { return state.data.groups.find(g => g.id === id); }
+  function needsReview(issue) {
+    return issue.urgency === "Needs Review" || issue.urgency === "High" ||
+      issue.urgency === "Critical" || issue.category === "Uncategorized" ||
+      issue.method === "AI Failed" || issue.method === "Header Mismatch";
+  }
+
+  // ------------------------------------------------------------ routing
+  function parseHash() {
+    const hash = (location.hash || "#overview").slice(1);
+    const parts = hash.split("/");
+    if (parts[0] === "issue" && parts[1]) return { page: "detail", type: "Issue", id: decodeURIComponent(parts[1]) };
+    if (parts[0] === "group" && parts[1]) return { page: "detail", type: "Group", id: decodeURIComponent(parts[1]) };
+    return { page: PAGES.indexOf(parts[0]) >= 0 ? parts[0] : "overview" };
+  }
+  function navigate(hash) {
+    if (location.hash === hash) {
+      route();
+    } else {
+      location.hash = hash;
+    }
+  }
+  function route() {
+    const target = parseHash();
+    if (target.page === "detail") {
+      state.selected = { type: target.type, id: target.id };
+      state.focusDetailHeading = true;
+      showPage("detail");
+      refreshSelectedDetail();
+    } else {
+      state.selected = null;
+      state.previousPage = target.page;
+      showPage(target.page);
+    }
+  }
+  function showPage(name) {
+    document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+    const page = byId("page-" + name);
+    page.classList.add("active");
+    document.querySelectorAll(".nav-button").forEach(btn => {
+      const active = btn.dataset.page === name;
+      btn.classList.toggle("active", active);
+      if (active) btn.setAttribute("aria-current", "page");
+      else btn.removeAttribute("aria-current");
+    });
+    window.scrollTo(0, 0);
+    const heading = page.querySelector("h1");
+    if (heading) {
+      heading.setAttribute("tabindex", "-1");
+      heading.focus({ preventScroll: true });
+    }
+  }
+  function openIssue(id) { navigate("#issue/" + encodeURIComponent(id)); }
+  function openGroup(id) { navigate("#group/" + encodeURIComponent(id)); }
+
+  // ------------------------------------------------------------ loading
+  function setStatus(message, isError) {
+    const status = byId("loadStatus");
+    status.textContent = message;
+    status.classList.toggle("error", !!isError);
+  }
+  function loadData(afterLoad) {
+    if (state.loading) return;
+    state.loading = true;
+    byId("refreshButton").disabled = true;
+    document.body.setAttribute("aria-busy", "true");
+    setStatus("Loading database...");
+    rpc("getPGNManagementData").then(data => {
+      data = data || {};
+      state.data = {
+        issues: data.issues || [],
+        groups: data.groups || [],
+        actionLogs: data.actionLogs || [],
+        deletedActionLogs: data.deletedActionLogs || []
+      };
+      state.viewer = data.viewer || "";
+      setText("viewer-info", state.viewer ? "Signed in as " + state.viewer : "");
+      renderAll();
+      setStatus("Database updated " + new Date().toLocaleTimeString() + ".");
+      if (state.selected) refreshSelectedDetail();
+      if (typeof afterLoad === "function") afterLoad();
+    }).catch(error => {
+      setStatus("Unable to load database: " + errorText(error), true);
+    }).then(() => {
+      state.loading = false;
+      byId("refreshButton").disabled = false;
+      document.body.removeAttribute("aria-busy");
+    });
+  }
+
+  // ------------------------------------------------------------ rendering
+  function renderAll() {
+    renderOverview();
+    renderComplaints();
+    renderExecutiveSections();
+    renderRecurring();
+    renderReviewQueue();
+    renderActionsPage();
+  }
+
+  function renderOverview() {
+    const issues = state.data.issues;
+    const submissions = new Set(issues.map(i => i.submissionId).filter(Boolean));
+    setText("stat-issues", issues.length);
+    setText("stat-submissions", submissions.size);
+    setText("stat-groups", activeGroups().length);
+    setText("stat-review", issues.filter(needsReview).length);
+    const container = byId("overview-categories");
+    container.replaceChildren();
+    const counts = CATEGORIES.map(([category]) => issues.filter(i => i.category === category).length);
+    const maximum = Math.max(1, ...counts);
+    CATEGORIES.forEach(([category, executive], index) => {
+      const wrapper = make("div", "", "category-row");
+      const heading = make("div", "", "category-head");
+      heading.append(make("span", executive + " (" + category + ")"), make("strong", counts[index]));
+      const track = make("div", "", "bar");
+      track.setAttribute("role", "img");
+      track.setAttribute("aria-label", counts[index] + " issues for " + executive);
+      const fill = make("div", "", "bar-fill");
+      fill.style.width = (counts[index] / maximum * 100) + "%";
+      track.appendChild(fill);
+      wrapper.append(heading, track);
+      container.appendChild(wrapper);
+    });
+    renderGroupRows("overview-groups", 5);
+  }
+
+  function linkedRow(values, linkIndex, href, onOpen) {
+    const row = make("tr", "", "clickable");
+    row.tabIndex = 0;
+    values.forEach((value, index) => {
+      const cell = make("td");
+      if (index === linkIndex) {
+        const link = make("a", value, "row-link");
+        link.href = href;
+        cell.appendChild(link);
+      } else if (value instanceof Node) {
+        cell.appendChild(value);
+      } else {
+        cell.textContent = String(value);
+      }
+      row.appendChild(cell);
+    });
+    row.addEventListener("click", event => {
+      if (event.target.closest("a")) return;
+      onOpen();
+    });
+    row.addEventListener("keydown", event => {
+      if (event.target !== row) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onOpen();
+      }
+    });
+    return row;
+  }
+
+  function emptyRow(text, span) {
+    const row = make("tr");
+    const cell = make("td", text, "empty");
+    cell.colSpan = span;
+    row.appendChild(cell);
+    return row;
+  }
+
+  function currentFilters() {
+    return {
+      search: byId("filter-search").value.toLowerCase().trim(),
+      category: byId("filter-category").value,
+      urgency: byId("filter-urgency").value,
+      status: byId("filter-status").value,
+      method: byId("filter-method").value,
+      from: byId("filter-from").value,
+      to: byId("filter-to").value
+    };
+  }
+
+  function renderComplaints() {
+    const f = currentFilters();
+    const filtered = state.data.issues.filter(issue => {
+      const haystack = [
+        issue.id, issue.submissionId, issue.summary, issue.originalText,
+        issue.category, issue.executive, issue.groupId, issue.feedbackType
+      ].join(" ").toLowerCase();
+      const dateKey = localDateKey(issue.date);
+      return (!f.search || haystack.includes(f.search)) &&
+        (!f.category || issue.category === f.category) &&
+        (!f.urgency || issue.urgency === f.urgency) &&
+        (!f.status || issue.status === f.status) &&
+        (!f.method || issue.method === f.method) &&
+        (!f.from || (dateKey && dateKey >= f.from)) &&
+        (!f.to || (dateKey && dateKey <= f.to));
+    }).sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    setText("complaint-count", filtered.length + " of " + state.data.issues.length + " complaints displayed");
+    const tbody = byId("complaints-table");
+    tbody.replaceChildren();
+    if (!filtered.length) {
+      tbody.appendChild(emptyRow("No matching complaints.", 6));
+      return;
+    }
+    filtered.forEach(issue => {
+      const summaryCell = make("span");
+      summaryCell.textContent = issue.summary;
+      tbody.appendChild(linkedRow(
+        [issue.id, readableDate(issue.date), issue.summary, issue.category, issue.urgency, issue.status],
+        2, "#issue/" + encodeURIComponent(issue.id), () => openIssue(issue.id)
+      ));
+    });
+  }
+
+  function resetFilters() {
+    ["filter-search", "filter-category", "filter-urgency", "filter-status", "filter-method", "filter-from", "filter-to"]
+      .forEach(id => { byId(id).value = ""; });
+    renderComplaints();
+  }
+
+  function renderExecutiveSections() {
+    const container = byId("executive-grid");
+    container.replaceChildren();
+    CATEGORIES.forEach(([category, executive]) => {
+      const count = state.data.issues.filter(i => i.category === category).length;
+      const button = make("button", "", "executive-card");
+      button.type = "button";
+      button.append(make("div", executive), make("strong", count), make("span", "View assigned complaints →"));
+      button.addEventListener("click", () => {
+        resetFilters();
+        byId("filter-category").value = category;
+        renderComplaints();
+        navigate("#complaints");
+      });
+      container.appendChild(button);
+    });
+  }
+
+  function renderGroupRows(containerId, limit) {
+    const tbody = byId(containerId);
+    tbody.replaceChildren();
+    let groups = activeGroups().sort((a, b) =>
+      b.reports - a.reports || (b.lastReported || "").localeCompare(a.lastReported || "")
+    );
+    if (limit) groups = groups.slice(0, limit);
+    if (!groups.length) {
+      tbody.appendChild(emptyRow("No recurring issues.", limit ? 4 : 6));
+      return;
+    }
+    groups.forEach(group => {
+      const values = limit
+        ? [group.title, group.category, group.reports, group.status]
+        : [group.title, group.category, group.reports, readableDate(group.lastReported), group.priority, group.status];
+      tbody.appendChild(linkedRow(values, 0, "#group/" + encodeURIComponent(group.id), () => openGroup(group.id)));
+    });
+  }
+
+  function renderRecurring() {
+    renderGroupRows("recurring-table", 0);
+    const tbody = byId("archived-table");
+    tbody.replaceChildren();
+    const groups = inactiveGroups();
+    if (!groups.length) {
+      tbody.appendChild(emptyRow("No archived or empty groups.", 5));
+      return;
+    }
+    groups.forEach(group => {
+      tbody.appendChild(linkedRow(
+        [group.title, group.category, group.reports, group.status, group.mergedInto || "—"],
+        0, "#group/" + encodeURIComponent(group.id), () => openGroup(group.id)
+      ));
+    });
+  }
+
+  function renderReviewQueue() {
+    const issues = state.data.issues.filter(needsReview)
+      .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    const tbody = byId("review-table");
+    tbody.replaceChildren();
+    if (!issues.length) {
+      tbody.appendChild(emptyRow("No issues in review queue.", 5));
+      return;
+    }
+    issues.forEach(issue => {
+      tbody.appendChild(linkedRow(
+        [issue.summary, issue.category, issue.method, issue.urgency, issue.status],
+        0, "#issue/" + encodeURIComponent(issue.id), () => openIssue(issue.id)
+      ));
+    });
+  }
+
+  function recordLink(log) {
+    const link = make("a", log.recordType + " " + log.recordId, "row-link");
+    link.href = (log.recordType === "Group" ? "#group/" : "#issue/") + encodeURIComponent(log.recordId);
+    return link;
+  }
+
+  function timelineEntry(log, options) {
+    const entry = make("div", "", "timeline-entry");
+    const header = make("div", "", "timeline-date");
+    header.append(document.createTextNode(readableDateTime(log.date) + " | "));
+    if (options.showRecord) header.appendChild(recordLink(log));
+    entry.appendChild(header);
+    entry.appendChild(make("div", log.text, "timeline-text"));
+    if (log.deleted) {
+      entry.appendChild(make("div",
+        "Deleted " + readableDateTime(log.deletedAt) + (log.deletedBy ? " by " + log.deletedBy : ""),
+        "timeline-meta"));
+    } else if (log.restoredAt) {
+      entry.appendChild(make("div", "Restored " + readableDateTime(log.restoredAt), "timeline-meta"));
+    }
+    if (options.action) entry.appendChild(options.action(log, entry));
+    return entry;
+  }
+
+  // Two-step inline confirmation (no window.confirm; keyboard friendly).
+  function confirmButton(label, confirmLabel, onConfirm, danger) {
+    const wrapper = make("div", "", "inline-confirm");
+    const trigger = make("button", label, "btn small " + (danger ? "danger" : "secondary"));
+    trigger.type = "button";
+    const message = make("span", "", "status-text");
+    trigger.addEventListener("click", () => {
+      wrapper.replaceChildren();
+      const confirm = make("button", confirmLabel, "btn small " + (danger ? "danger" : ""));
+      confirm.type = "button";
+      const cancel = make("button", "Cancel", "btn small secondary");
+      cancel.type = "button";
+      cancel.addEventListener("click", () => {
+        wrapper.replaceChildren(trigger, message);
+        trigger.focus();
+      });
+      confirm.addEventListener("click", () => {
+        confirm.disabled = true;
+        cancel.disabled = true;
+        message.textContent = "Working...";
+        wrapper.appendChild(message);
+        onConfirm().catch(error => {
+          message.textContent = errorText(error);
+          message.classList.add("error");
+          confirm.disabled = false;
+          cancel.disabled = false;
+        });
+      });
+      wrapper.append(confirm, cancel);
+      confirm.focus();
+    });
+    wrapper.append(trigger, message);
+    return wrapper;
+  }
+
+  function deleteControl(log) {
+    return confirmButton("Delete Note", "Confirm delete", () =>
+      rpc("deletePGNActionNote", log.id).then(() => { setStatus("Note deleted. Refreshing..."); loadData(); }), true);
+  }
+  function restoreControl(log) {
+    return confirmButton("Restore Note", "Confirm restore", () =>
+      rpc("restorePGNActionNote", log.id).then(() => { setStatus("Note restored. Refreshing..."); loadData(); }));
+  }
+
+  function renderActionsPage() {
+    const container = byId("all-actions");
+    container.replaceChildren();
+    if (!state.data.actionLogs.length) {
+      container.appendChild(make("p", "No actions recorded yet.", "empty"));
+    }
+    state.data.actionLogs.forEach(log => {
+      container.appendChild(timelineEntry(log, { showRecord: true, action: deleteControl }));
+    });
+    const deleted = byId("deleted-actions");
+    deleted.replaceChildren();
+    if (!state.data.deletedActionLogs.length) {
+      deleted.appendChild(make("p", "No deleted notes.", "empty"));
+    }
+    state.data.deletedActionLogs.forEach(log => {
+      deleted.appendChild(timelineEntry(log, { showRecord: true, action: restoreControl }));
+    });
+  }
+
+  // ------------------------------------------------------------ detail pages
+  function refreshSelectedDetail() {
+    if (!state.selected) return;
+    const container = byId("detail-content");
+    if (state.selected.type === "Issue") {
+      const issue = findIssue(state.selected.id);
+      if (issue) renderIssueDetail(issue);
+      else renderMissing(container, "complaint");
+    } else {
+      const group = findGroup(state.selected.id);
+      if (group) renderGroupDetail(group);
+      else renderMissing(container, "recurring group");
+    }
+    // Move focus to the freshly built heading only on navigation, never
+    // on a background refresh (which would steal focus from a form).
+    if (state.focusDetailHeading) {
+      state.focusDetailHeading = false;
+      const heading = container.querySelector("h1");
+      if (heading) {
+        heading.setAttribute("tabindex", "-1");
+        heading.focus({ preventScroll: true });
+      }
+    }
+  }
+
+  function renderMissing(container, label) {
+    container.replaceChildren();
+    container.appendChild(make("h1", "Record not found."));
+    container.appendChild(make("p",
+      state.data.issues.length || state.data.groups.length
+        ? "That " + label + " is not in the current data. It may have been removed, or the ID in the link is wrong."
+        : "Data is still loading or could not be loaded.",
+      "description"));
+  }
+
+  function detailLine(label, value) {
+    const cell = make("div");
+    cell.appendChild(make("small", label));
+    cell.appendChild(make("strong", value === 0 ? "0" : (value || "Not recorded")));
+    return cell;
+  }
+
+  let selectCounter = 0;
+  function labelledSelect(labelText, values, current, extraMargin) {
+    const id = "select-" + (++selectCounter);
+    const label = make("label", labelText);
+    label.htmlFor = id;
+    if (extraMargin) label.style.marginTop = extraMargin;
+    const select = make("select");
+    select.id = id;
+    values.forEach(value => {
+      const option = make("option", value);
+      option.value = value;
+      select.appendChild(option);
+    });
+    select.value = values.includes(current) ? current : values[0];
+    return { label, select };
+  }
+
+  function saveButton(text) {
+    const button = make("button", text, "btn");
+    button.type = "button";
+    button.style.marginTop = "14px";
+    return button;
+  }
+
+  function createCategoryEditor(issue) {
+    const panel = make("div", "", "panel");
+    panel.appendChild(make("h3", "Executive Classification"));
+    const field = labelledSelect("Assigned Category", CATEGORY_NAMES, issue.category);
+    const preview = make("p", "", "status-text");
+    const updatePreview = () => {
+      const selected = CATEGORIES.find(entry => entry[0] === field.select.value);
+      preview.textContent = "Responsible executive: " + (selected ? selected[1] : "President");
+    };
+    field.select.addEventListener("change", updatePreview);
+    updatePreview();
+    panel.append(field.label, field.select, preview);
+    panel.appendChild(make("div",
+      "If Gemini selected the wrong category, choose the correct executive section and save. " +
+      "The correction is stored and shown to Gemini as an example in future classifications " +
+      "(it does not retrain the model). Any recurring-group link is re-evaluated.",
+      "editor-note"));
+    const button = saveButton("Save Category Correction");
+    const message = make("p", "", "status-text");
+    button.addEventListener("click", () => {
+      const newCategory = field.select.value;
+      if (newCategory === issue.category) {
+        message.textContent = "This complaint is already in that category.";
+        return;
+      }
+      button.disabled = true;
+      message.classList.remove("error");
+      message.textContent = "Saving category correction...";
+      rpc("updatePGNIssueCategory", issue.id, newCategory).then(result => {
+        if (!result || !result.success) throw new Error("Category update was not confirmed.");
+        message.textContent = "Category saved." + (result.syncWarning ? " " + result.syncWarning : "") + " Updating dashboard...";
+        loadData();
+      }).catch(error => {
+        button.disabled = false;
+        message.classList.add("error");
+        message.textContent = "Correction failed: " + errorText(error);
+      });
+    });
+    panel.append(button, message);
+    return panel;
+  }
+
+  function createGroupAssignment(issue) {
+    const panel = make("div", "", "panel");
+    panel.appendChild(make("h3", "Recurring Group Assignment"));
+    const options = activeGroups().filter(g => g.category === issue.category);
+    const current = findGroup(issue.groupId);
+    if (current && !options.some(g => g.id === current.id)) options.unshift(current);
+    const id = "select-" + (++selectCounter);
+    const label = make("label", "Group (same category only)");
+    label.htmlFor = id;
+    const select = make("select");
+    select.id = id;
+    const none = make("option", "Not in a group");
+    none.value = "";
+    select.appendChild(none);
+    options.forEach(g => {
+      const option = make("option", g.title + (g.archived ? " (archived)" : ""));
+      option.value = g.id;
+      if (g.archived) option.disabled = true;
+      select.appendChild(option);
+    });
+    select.value = issue.groupId || "";
+    const note = make("p",
+      issue.manualGroup
+        ? "This assignment was set manually; automatic grouping will not change it."
+        : "Automatic grouping may link this complaint. Saving here makes your choice permanent.",
+      "status-text");
+    const button = saveButton("Save Group Assignment");
+    const message = make("p", "", "status-text");
+    button.addEventListener("click", () => {
+      button.disabled = true;
+      message.classList.remove("error");
+      message.textContent = "Saving assignment...";
+      rpc("pgnSetIssueRecurringGroup", issue.id, select.value).then(() => {
+        message.textContent = "Assignment saved. Updating dashboard...";
+        loadData();
+      }).catch(error => {
+        button.disabled = false;
+        message.classList.add("error");
+        message.textContent = errorText(error);
+      });
+    });
+    panel.append(label, select, note, button, message);
+    return panel;
+  }
+
+  function createActionEditor(type, id) {
+    const panel = make("div", "", "panel");
+    panel.appendChild(make("h3", "Presidential Action Log"));
+    const entries = state.data.actionLogs.filter(log => log.recordType === type && log.recordId === id);
+    if (!entries.length) {
+      panel.appendChild(make("p", "No actions documented for this record yet.", "empty"));
+    }
+    entries.forEach(log => panel.appendChild(timelineEntry(log, { showRecord: false, action: deleteControl })));
+    const heading = make("h3", "Record an Action");
+    heading.style.marginTop = "22px";
+    panel.appendChild(heading);
+    const textareaId = "note-" + (++selectCounter);
+    const label = make("label", "What leadership discussed, planned, or did");
+    label.htmlFor = textareaId;
+    const textarea = make("textarea");
+    textarea.id = textareaId;
+    textarea.maxLength = 5000;
+    textarea.placeholder = "Describe what leadership discussed, planned, or did.";
+    const button = saveButton("Save Action Note");
+    const message = make("p", "", "status-text");
+    let token = randomToken();
+    button.addEventListener("click", () => {
+      const text = textarea.value.trim();
+      if (!text || text.length > 5000) {
+        message.textContent = "Enter an action note of 1 to 5000 characters.";
+        return;
+      }
+      button.disabled = true;
+      message.classList.remove("error");
+      message.textContent = "Saving action...";
+      rpc("addPGNActionNote", type, id, text, token).then(() => {
+        token = randomToken();
+        textarea.value = "";
+        message.textContent = "Action saved. Updating dashboard...";
+        loadData();
+      }).catch(error => {
+        button.disabled = false;
+        message.classList.add("error");
+        message.textContent = "Save failed: " + errorText(error);
+      });
+    });
+    panel.append(label, textarea, button, message);
+    return panel;
+  }
+
+  function createSubmissionViewer(issue) {
+    const panel = make("div", "", "panel");
+    panel.appendChild(make("h3", "Full Submission"));
+    panel.appendChild(make("p",
+      "The excerpt above is the part of the submission this issue was extracted from. " +
+      "Open the complete response to confirm no concern was missed.",
+      "status-text"));
+    const button = make("button", "View full submission", "btn secondary");
+    button.type = "button";
+    const output = make("div");
+    output.style.marginTop = "14px";
+    button.addEventListener("click", () => {
+      button.disabled = true;
+      output.replaceChildren(make("p", "Loading submission...", "status-text"));
+      rpc("getPGNSubmissionText", issue.submissionId).then(full => {
+        output.replaceChildren();
+        const meta = make("div", "", "detail-info");
+        meta.append(detailLine("Submitted", readableDateTime(full.submittedAt)), detailLine("Feedback Type", full.feedbackType));
+        output.append(meta, make("div", full.feedback, "quote"));
+        if (full.headerMismatch) output.appendChild(make("p", "Form question titles did not match the configuration when this row was read.", "status-text error"));
+        button.textContent = "Reload full submission";
+        button.disabled = false;
+      }).catch(error => {
+        output.replaceChildren(make("p", errorText(error), "status-text error"));
+        button.disabled = false;
+      });
+    });
+    panel.append(button, output);
+    return panel;
+  }
+
+  function renderIssueDetail(issue) {
+    const container = byId("detail-content");
+    container.replaceChildren();
+    container.appendChild(make("div", "INDIVIDUAL COMPLAINT / " + issue.id, "eyebrow"));
+    const heading = make("h1", issue.summary);
+    heading.id = "h-detail";
+    heading.tabIndex = -1;
+    container.appendChild(heading);
+    const layout = make("div", "", "detail-grid");
+    const left = make("div");
+    const right = make("div");
+
+    const details = make("div", "", "panel");
+    details.appendChild(make("h3", "Complaint Details"));
+    const info = make("div", "", "detail-info");
+    const group = findGroup(issue.groupId);
+    [
+      ["Date Submitted", readableDateTime(issue.date)],
+      ["Feedback Type", issue.feedbackType],
+      ["Category", issue.category],
+      ["Responsible Executive", issue.executive],
+      ["Submission ID", issue.submissionId],
+      ["Recurring Group", group ? group.title + " (" + group.id + ")" : (issue.groupId || "Not grouped")],
+      ["Processing Method", issue.method],
+      ["Issue ID", issue.id]
+    ].forEach(([label, value]) => info.appendChild(detailLine(label, value)));
+    details.appendChild(info);
+    details.appendChild(make("h3", "Original Complaint"));
+    details.appendChild(make("div", issue.originalText, "quote"));
+    if (issue.method === "AI Failed" || issue.method === "Header Mismatch") {
+      details.appendChild(make("div",
+        "This submission was stored in full because automatic processing could not split it. " +
+        "Review it and correct the category; you can also record separate action notes.",
+        "editor-note"));
+    }
+    left.appendChild(details);
+    left.appendChild(createSubmissionViewer(issue));
+    if (group) {
+      const link = make("a", "Open recurring group: " + group.title, "btn secondary list-link");
+      link.href = "#group/" + encodeURIComponent(group.id);
+      left.appendChild(link);
+    }
+
+    const management = make("div", "", "panel");
+    management.appendChild(make("h3", "Complaint Management"));
+    const urgency = labelledSelect("Urgency", URGENCY_LEVELS, issue.urgency);
+    const status = labelledSelect("Status", STATUS_LEVELS, issue.status, "17px");
+    const save = saveButton("Save Management Changes");
+    const message = make("p", "", "status-text");
+    save.addEventListener("click", () => {
+      save.disabled = true;
+      message.classList.remove("error");
+      message.textContent = "Saving...";
+      rpc("updatePGNIssue", issue.id, urgency.select.value, status.select.value).then(() => {
+        message.textContent = "Changes saved. Updating dashboard...";
+        loadData();
+      }).catch(error => {
+        save.disabled = false;
+        message.classList.add("error");
+        message.textContent = "Save failed: " + errorText(error);
+      });
+    });
+    management.append(urgency.label, urgency.select, status.label, status.select, save, message);
+
+    right.appendChild(createCategoryEditor(issue));
+    right.appendChild(createGroupAssignment(issue));
+    right.appendChild(management);
+    right.appendChild(createActionEditor("Issue", issue.id));
+    layout.append(left, right);
+    container.appendChild(layout);
+  }
+
+  function createGroupManagement(group) {
+    const panel = make("div", "", "panel");
+    panel.appendChild(make("h3", "Group Management"));
+    const priority = labelledSelect("Priority", GROUP_PRIORITIES, group.priority);
+    const status = labelledSelect("Status", GROUP_STATUSES, group.status, "15px");
+    const save = saveButton("Save Group Changes");
+    const message = make("p", "", "status-text");
+    save.addEventListener("click", () => {
+      save.disabled = true;
+      message.classList.remove("error");
+      message.textContent = "Saving...";
+      rpc("pgnSetRecurringGroupManagement", group.id, priority.select.value, status.select.value).then(() => {
+        message.textContent = "Group updated. Refreshing...";
+        loadData();
+      }).catch(error => {
+        save.disabled = false;
+        message.classList.add("error");
+        message.textContent = errorText(error);
+      });
+    });
+    panel.append(priority.label, priority.select, status.label, status.select, save, message);
+
+    const candidates = activeGroups().filter(g => g.id !== group.id && g.category === group.category);
+    const mergeId = "select-" + (++selectCounter);
+    const mergeLabel = make("label", "Merge this group into (same category)");
+    mergeLabel.htmlFor = mergeId;
+    mergeLabel.style.marginTop = "22px";
+    const mergeSelect = make("select");
+    mergeSelect.id = mergeId;
+    candidates.forEach(g => {
+      const option = make("option", g.title + " (" + g.reports + " reports)");
+      option.value = g.id;
+      mergeSelect.appendChild(option);
+    });
+    const mergeNote = make("p",
+      candidates.length
+        ? "Moves this group's complaints into the selected group. This group is archived with its notes intact and a system note is added to the target."
+        : "No other active group in this category to merge into.",
+      "status-text");
+    const mergeControl = confirmButton("Merge into Selected Group", "Confirm merge", () =>
+      rpc("pgnMergeRecurringGroups", group.id, mergeSelect.value).then(result => {
+        setStatus("Merged " + result.moved + " complaint(s). Refreshing...");
+        loadData(() => openGroup(result.targetId));
+      }));
+    if (!candidates.length) mergeControl.querySelector("button").disabled = true;
+    panel.append(mergeLabel, mergeSelect, mergeNote, mergeControl);
+    return panel;
+  }
+
+  function createBriefPanel(group) {
+    const panel = make("div", "", "panel");
+    panel.appendChild(make("h3", "AI Leadership Brief"));
+    panel.appendChild(make("p",
+      "Generates a grounded summary from complaint summaries and active leadership notes. " +
+      "Deleted notes are never included. AI suggestions do not change records.",
+      "status-text"));
+    const button = make("button", "Generate Leadership Brief", "btn");
+    button.type = "button";
+    const output = make("div");
+    output.style.marginTop = "17px";
+    output.setAttribute("aria-live", "polite");
+    button.addEventListener("click", () => {
+      button.disabled = true;
+      output.replaceChildren(make("p", "Generating brief...", "status-text"));
+      rpc("generatePGNLeadershipBrief", group.id).then(brief => {
+        output.replaceChildren();
+        [["Concern", "concern"], ["Documented actions", "actions"],
+         ["What remains uncertain", "uncertainties"], ["Suggested next step", "nextStep"]]
+          .forEach(([label, key]) => {
+            output.append(make("h3", label), make("p", brief[key] || "Not established.", "timeline-text"));
+          });
+        output.appendChild(make("p",
+          "Based on " + brief.complaintCount + " complaint summar" + (brief.complaintCount === 1 ? "y" : "ies") +
+          " and " + brief.actionCount + " active note" + (brief.actionCount === 1 ? "" : "s") +
+          (brief.cached ? " (cached result)" : "") + ".",
+          "status-text"));
+      }).catch(error => {
+        output.replaceChildren(make("p", errorText(error), "status-text error"));
+      }).then(() => { button.disabled = false; });
+    });
+    panel.append(button, output);
+    return panel;
+  }
+
+  function renderGroupDetail(group) {
+    const container = byId("detail-content");
+    container.replaceChildren();
+    container.appendChild(make("div", "RECURRING ISSUE / " + group.id, "eyebrow"));
+    const heading = make("h1", group.title);
+    heading.id = "h-detail";
+    heading.tabIndex = -1;
+    container.appendChild(heading);
+    if (group.archived) {
+      const note = make("div", "", "editor-note");
+      note.append(document.createTextNode("This group was merged and is archived. Its earlier notes are kept below. "));
+      if (group.mergedInto) {
+        const link = make("a", "Open the surviving group " + group.mergedInto, "row-link");
+        link.href = "#group/" + encodeURIComponent(group.mergedInto);
+        note.appendChild(link);
+      }
+      container.appendChild(note);
+    }
+    const layout = make("div", "", "detail-grid");
+    const left = make("div");
+    const right = make("div");
+
+    const overview = make("div", "", "panel");
+    overview.appendChild(make("h3", "Recurring Concern"));
+    const info = make("div", "", "detail-info");
+    [
+      ["Category", group.category],
+      ["Reports", group.reports],
+      ["First Reported", readableDate(group.firstReported)],
+      ["Last Reported", readableDate(group.lastReported)],
+      ["Status", group.status],
+      ["Priority", group.priority]
+    ].forEach(([label, value]) => info.appendChild(detailLine(label, value)));
+    overview.appendChild(info);
+    if (group.description && group.description !== group.title) {
+      overview.appendChild(make("p", group.description, "status-text"));
+    }
+    left.appendChild(overview);
+
+    const associated = make("div", "", "panel");
+    associated.appendChild(make("h3", "Associated Complaints"));
+    const related = state.data.issues.filter(issue => issue.groupId === group.id)
+      .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    if (!related.length) associated.appendChild(make("p", "No linked complaints.", "empty"));
+    related.forEach(issue => {
+      const link = make("a", readableDate(issue.date) + " | " + issue.id + " | " + issue.summary, "btn secondary list-link");
+      link.href = "#issue/" + encodeURIComponent(issue.id);
+      associated.appendChild(link);
+    });
+    left.appendChild(associated);
+
+    if (!group.archived) {
+      right.appendChild(createGroupManagement(group));
+      right.appendChild(createBriefPanel(group));
+    }
+    right.appendChild(createActionEditor("Group", group.id));
+    layout.append(left, right);
+    container.appendChild(layout);
+  }
+
+  // ------------------------------------------------------------ wiring
+  document.querySelectorAll(".nav-button").forEach(button => {
+    button.type = "button";
+    button.addEventListener("click", () => navigate("#" + button.dataset.page));
+  });
+  byId("refreshButton").addEventListener("click", () => loadData());
+  byId("detail-back").addEventListener("click", () => navigate("#" + (state.previousPage || "overview")));
+  byId("filter-reset").addEventListener("click", resetFilters);
+  ["filter-category", "filter-urgency", "filter-status", "filter-method", "filter-from", "filter-to"]
+    .forEach(id => byId(id).addEventListener("change", renderComplaints));
+  byId("filter-search").addEventListener("input", renderComplaints);
+  window.addEventListener("hashchange", route);
+  window.addEventListener("load", () => {
+    route();
+    if (!hasBackend()) {
+      setStatus("Open this dashboard through its Apps Script web app URL to load data.", true);
+      renderAll();
+      return;
+    }
+    loadData();
+  });
+})();
+</script>
+</body>
+</html>
